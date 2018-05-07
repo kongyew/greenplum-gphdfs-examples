@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Including configurations
-. "${DIR}"/config.sh
+. "${DIR}"/../config.sh
 
 
 
@@ -111,7 +111,8 @@ function SetupCDH5()
   # gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'hdb2'"
   # http://doc.mapr.com/display/MapR/Setting+Up+the+Client
 
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'"
+#  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'"
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'mapr'"
 
   # gpmr-1.2
 
