@@ -36,16 +36,14 @@ before_install:
   # whatever reason it's best to report that now before your tests start
   # otherwise it can be really tricky to debug why tests are failing sometimes.
   - docker ps
-  - cd ${TRAVIS_BUILD_DIR}
-  - wget https://dl.minio.io/client/mc/release/linux-amd64/mc
-  - chmod +x mc
+
 script:
   - ls -lah
   - docker-compose -f ./usecase1/docker-compose.yml up &
   - docker ps
   - docker-compose -f ./usecase1/docker-compose.yml down
   - cd ${TRAVIS_BUILD_DIR}
-  - ./mc --help
+  - ls -al
 notifications:
   email:
     - kongyew@gmail.com
