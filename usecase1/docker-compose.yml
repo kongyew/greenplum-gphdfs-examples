@@ -46,7 +46,7 @@ services:
         #build:
         #  context: .
         #  dockerfile: ./gpdb/Dockerfile
-        image: "kochanpivotal/gpdb5-pxf"
+        image: "kochanpivotal/gpdb5oss"
         command: bin/bash
         hostname: "gpdbsne"
         container_name: gpdbsne
