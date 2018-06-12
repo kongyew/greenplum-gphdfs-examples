@@ -5,18 +5,15 @@ date:   2018-04-20 14:54:07 -0700
 categories: greenplum hadoop cloudera gphdfs
 ---
 
-
-# How to use Greenplum (GPHDFS to read data from Hadoop (Cloudera)
-
+# How to use Greenplum to read data from Hadoop
 This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstrates how to use GPHDFS to read text data from hadoop.
 
 # Table of Contents
 1. [Pre-requisites](#Pre-requisites)
-2. [Starting Docker-compose](#Starting Docker-compose)
-3. [Configure Greenplum](#Configure Greenplum)
+2. [Start Docker-compose](#Start-Docker-compose)
+3. [Configure Greenplum with Hadoop](#Configure-Greenplum-with-Hadoop)
+4. [Configure Greenplum with sample database with data](#Configure-Greenplum-with-sample-database-with-data)
 4. [Configure Cloudera](#Configure-Cloudera)
-
-
 
 ## Pre-requisites:
 - [docker-compose](http://docs.docker.com/compose)
@@ -24,14 +21,13 @@ This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstr
 - [GPDB 5.x OSS docker image](https://hub.docker.com/r/kochanpivotal/gpdb5oss/)
 
 ## Starting Docker-compose
-Once you have cloned this repository, you can run the command  `./runDocker.sh -t usecase1 -c up`, in order to start both Greenplum and Streamsets docker instances.
+Once you have cloned this repository, you can run the command  `./runDocker.sh -t usecase1 -c up`, in order to start both Greenplum and Cloudera docker instances.
 
 The assumption: docker and docker-compose are already installed on your machine.
 
 ### Run command to start both Greenplum and Cloudera instances
 ```
 $ ./runDocker.sh -t usecase1 -c up
-WARNING: Found orphan containers (postgresql) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
 Recreating gpdbsne ... done
 Recreating quickstart.cloudera ... done
 Attaching to gpdbsne, quickstart.cloudera
@@ -57,7 +53,6 @@ CONTAINER ID        IMAGE                        COMMAND                  CREATE
 root@gpdbsne:/#
 
 ```
-
 ### How to access Cloudera docker instance:
 You can use this command `docker exec -it quickstart.cloudera bin/bash` to access Cloudera docker instance.
 
@@ -66,27 +61,14 @@ For example:
 $ docker exec -it quickstart.cloudera bin/bash
 [root@quickstart /]#
 ```
-
-## Configure Greenplum
+## Configure Greenplum with Hadoop
 Once you have access to Greenplum docker instance, you can create database, table with some sample data.
 
-1. Start GPDB instance:
-Use the command 'startGPDB.sh'
-```
-root@gpdbsne# startGPDB.sh
-SSHD isn't running
- * Starting OpenBSD Secure Shell server sshd                             [ OK ]
-SSHD is running...
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Starting gpstart with args: -a
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Gathering information and validating the environment...
-...
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[INFO]:-Have lock file /tmp/.s.PGSQL.5432 and a process running on port 5432
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[ERROR]:-gpstart error: Master instance process running
-```
-2. Download Hadoop distribution and [configure Greenplum to use Hadoop distribution](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-one-time-hdfs-protocol-installation.html).
+
+
+1. Download Hadoop distribution and [configure Greenplum to use Hadoop distribution](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-one-time-hdfs-protocol-installation.html).
 
 Or you can use these scripts to automate the setup process.
-
 #### Download Hadoop files
 This script downloads hadoop tar file and unzip the file on the local directory. You can manually select different hadoop distributions by editing VERSION.
 ```
@@ -102,17 +84,17 @@ Saving to: './HADOOP/hadoop-2.7.6.tar.gz.2'
 17% [======>                                ] 38,927,384  9.53MB/s  eta 21s  
 ```
 #### Setup Hadoop files
-
-This script install the hadoop files under /usr/local/hadoop
+This script `/code/usecase1/gphdfs/setup/SetupHadoopTarGz.sh` installs the hadoop files under `/usr/local/hadoop`.
 ```
+[root@gpdbsne /]# su - gpadmin
+Last login: Tue Jun 12 22:10:20 UTC 2018 from gpdbsne on pts/3
+[gpadmin@gpdbsne gphdfs]$ cd /code/usecase1/gphdfs/setup
 [gpadmin@gpdbsne setup]$ ./SetupHadoopTarGz.sh
 Using ./HADOOP
 CreateHadoopDir:  ./HADOOP/hadoop-2.7.6.tar.gz
 ```
-
-#### Setup Hadoop distribution and Hadoop setting for Greenplum, and setup Java
-
-This script install the hadoop files under /usr/local/hadoop
+#### Setup Hadoop distribution and Hadoop setting for Greenplum, and installs Java
+This script configures Greenplum to use the hadoop distribution and version.
 ```
 [gpadmin@gpdbsne setup]$ ./SetupGPHDFS.sh -i cdh5
 export HADOOP_USER_NAME=gpadmin
@@ -135,10 +117,9 @@ Using delaybeforesend 0.05 and prompt_validation_timeout 1.0
 [gpdbsne] Segment value: mpr
 [INFO] completed successfully
 ```
-
-##### Create sample database with the name "gphdfs_db"
+## Configure Greenplum with sample database with data
+3. Create sample database with the name "gphdfs_db"
 The scripts to create database and sample data is found at `/code/usercase1/data`.
-
 Next, run the command '/code/usecase1/data/setupDB.sh'
 ```
 [gpadmin@gpdbsne gphdfs]$ ./setupDB.sh           
@@ -146,13 +127,15 @@ GRANT
 GRANT
 CREATE EXTERNAL TABLE
 ```
+4. Verify database and table is created
+Use 'psql -U gpadmin -d gphdfs_db -c "\dE"'
+5. Verify database and table is created.
+Use the command `su - gpadmin`, followed by `psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"`.
 
-3. Verify database and table is created.
-Use the command `su - gpadmin`, followed by `psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"`.  The result shows no records are yet created.
-Example:
+The result shows no records are yet created.
+For example:
 ```
 root@gpdbsne:/code/usecase1/data#su - gpadmin
-$
 $ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
  count
 -------
@@ -161,9 +144,6 @@ $ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
 ```
 ## Configure Cloudera
 This section describes how to setup Cloudera.
-
-
-
 
 ### Setup example data on cloudera
 1. You can use this command `docker exec -it quickstart.cloudera bin/bash` to access Cloudera docker instance.
@@ -174,8 +154,7 @@ $ docker exec -it quickstart.cloudera bin/bash
 ```
 2. This script `setupHdfsTextSimpleExample.sh` creates sample text file.
 ```
-[root@quickstart cloudera]# cd /code/usecase1/cloudera
-[root@quickstart cloudera]#[root@quickstart cloudera]# ./setupHdfsTextSimpleExample.sh
+[root@quickstart cloudera]#/code/usecase1/cloudera/setupHdfsTextSimpleExample.sh
 Using root to run this script.
 Found hadoop /data directory
 Recursively delete files under /data
@@ -191,8 +170,7 @@ Make sure you are accessing GPDB docker instance.
 
 1. Use psql on GPDB docker instance
 ````
-[gpadmin@gpdbsne gphdfs]$
-hdfs_textsimple; gphdfs]$ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_hdfs_textsimple;"
+$ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_readtextsimple;"
 location   | month | num_orders | total_sales
 -------------+-------+------------+-------------
 Prague      | Jan   |        101 |     4875.33
@@ -201,15 +179,21 @@ Prague      | Jan   |        101 |     4875.33
  Beijing   | Jul   |        411 |    11600.67
 (4 rows)
 ```
+2. Verify the number of records in this table "gphdfs_readtextsimple".
 
-2. Verify the number of records in this table gphdfs_hdfs_textsimple
 ```
-hdfs_textsimple; gphdfs]$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
+$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_readtextsimple;"
 count
 -------
     4
 (1 row)
 ```
+
+
+# Reference:
+* [How to setup GPHDFS for GPDB 5.x](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-using-hadoop-distributed-file-system--hdfs--tables.html)
+* [Greenplum product](https://pivotal.io/pivotal-greenplum)
+* [Greenplum documentations](https://https://gpdb.docs.pivotal.io/)
 # Reference:
 [Greenplum product]: https://pivotal.io/pivotal-greenplum
 [Greenplum documentations]: https://https://gpdb.docs.pivotal.io/
