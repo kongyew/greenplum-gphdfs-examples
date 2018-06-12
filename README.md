@@ -3,10 +3,13 @@ This repository provides examples on how to use Greenplum with GPHDFS to access 
 
 [![Build Status](https://travis-ci.org/kongyew/greenplum-gphdfs-examples.svg?branch=master)](https://travis-ci.org/kongyew/greenplum-gphdfs-examples)
 
+# Use Case
+1. How to read simple text file on HDFS (Cloudera distribution)
+2. How to read parquet file on HDFS (Cloudera distribution)
 
-# Greenplum
+
+# Reference:
+## Greenplum
 The Greenplum Database (GPDB) is an advanced, fully featured, open source data warehouse. It provides powerful and rapid analytics on petabyte scale data volumes. Uniquely geared toward big data analytics, Greenplum Database is powered by the world’s most advanced cost-based query optimizer delivering high analytical query performance on large data volumes.
-
-https://pivotal.io/pivotal-greenplum
-
-[![Build Status](https://travis-ci.org/kongyew/greenplum-gphdfs-examples.svg?branch=master)](https://travis-ci.org/kongyew/greenplum-gphdfs-examples)
+[Greenplum](https://greenplum.org)
+[Pivotal Greenplum](https://pivotal.io/pivotal-greenplum)

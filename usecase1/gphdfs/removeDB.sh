@@ -1,20 +1,4 @@
 #!/bin/bash
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 
 set -e
 
@@ -28,6 +12,14 @@ cd $current
 
 echo "psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${GREENPLUM_DB} -c \"DROP DATABASE IF EXISTS ${POSTGRES_DB}\" "
 
-psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_hdfs_textsimple"
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_readtextsimple1"
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_writetextsimple1"
+
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_readtextsimple2"
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_writetextsimple2"
+
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_readfoo"
+psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${POSTGRES_DB} -c "DROP EXTERNAL TABLE IF EXISTS gphdfs_writefoo"
+
 
 psql -h ${GREENPLUM_HOST} -U ${GREENPLUM_USER} -d ${GREENPLUM_DB} -c "DROP DATABASE IF EXISTS ${POSTGRES_DB}"

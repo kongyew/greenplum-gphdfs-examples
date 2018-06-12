@@ -27,8 +27,6 @@ function CreateHadoopDir()
     echo "$hadoop_tar_gz is not found."
   fi
 
-
-
   if [ "$(whoami)" == "gpadmin" ]; then
     if [ -d "/usr/local/hadoop" ]; then
         echo "Found /usr/local/hadoop"
@@ -36,6 +34,7 @@ function CreateHadoopDir()
         sudo mkdir -p /usr/local/hadoop
     fi
     sudo mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
+    echo "ls -al /usr/local/hadoop"
 
   elif [ "$(whoami)" == "root" ]; then
     if [ -d "/usr/local/hadoop" ]; then
@@ -44,8 +43,7 @@ function CreateHadoopDir()
         mkdir -p /usr/local/hadoop
     fi
     mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
-
-
+    echo "ls -al /usr/local/hadoop"
   else
     echo "Cannot run as this user: $(whoami)"
     exit -1
@@ -86,30 +84,26 @@ function ConfigureGPHDFS()
 
   if [ "$(whoami)" == "gpadmin" ]; then
     gpconfig -c gp_hadoop_target_version -v  ${HADOOP_TARGET_VERSION}
+    gpconfig -c gp_hadoop_home -v ${HADOOP_HOME}
     gpstop -u
     gpconfig -s gp_hadoop_target_version
 
   elif [ "$(whoami)" == "root" ]; then
-    # gpconfig -c gp_hadoop_target_version -v 'hdp2'
     runuser -l gpadmin -c "gpconfig -c gp_hadoop_target_version -v  ${HADOOP_TARGET_VERSION}"
-  #runuser -l gpadmin -c "gpconfig -c gp_hadoop_home -v ${HADOOP_HOME}"
+    runuser -l gpadmin -c "gpconfig -c gp_hadoop_home -v ${HADOOP_HOME}"
     runuser -l gpadmin -c "gpstop -u"
     runuser -l gpadmin -c "gpconfig -s gp_hadoop_target_version "
-
-
   else
     echo "Cannot run as this user: $(whoami)"
     exit -1
   fi
-
-
-
 }
 
 
 
 ###############################################################################
-
+# main
+###############################################################################
 if [ "$VERSION" == "" ]; then
   echo "Error: Please specify the variable $VERSION"
   exit 1

@@ -1,6 +1,7 @@
-# Pivotal Greenplum
-The Pivotal Greenplum Database (GPDB) is an advanced, fully featured, open source data warehouse. It provides powerful and rapid analytics on petabyte scale data volumes. Uniquely geared toward big data analytics, Greenplum Database is powered by the world’s most advanced cost-based query optimizer delivering high analytical query performance on large data volumes.
-<https://pivotal.io/pivotal-greenplum>
+
+# Greenplum
+Greenplum Database® is an advanced, fully featured, open source data platform.  It provides powerful and rapid analytics on petabyte scale data volumes.  Uniquely geared toward big data analytics, Greenplum Database is powered by the world’s most advanced cost-based query optimizer delivering high analytical query performance on large data volumes.
+<https://greenplum.org>
 
 # How to use Greenplum to read data from Hadoop
 This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstrates how to use GPHDFS to read text data from hadoop.
@@ -25,7 +26,6 @@ The assumption: docker and docker-compose are already installed on your machine.
 ### Run command to start both Greenplum and Cloudera instances
 ```
 $ ./runDocker.sh -t usecase1 -c up
-WARNING: Found orphan containers (postgresql) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
 Recreating gpdbsne ... done
 Recreating quickstart.cloudera ... done
 Attaching to gpdbsne, quickstart.cloudera

@@ -21,7 +21,8 @@ set -e
 
 
 ROOT_UID=0
-export OUTPUTFILE=gphdfs_hdfs_simple.txt
+export OUTPUTFILE=gphdfs_readtextsimple1.txt
+export OUTPUTFILE2=gphdfs_readtextsimple2.txt
 
 # Run as root, of course. (this might not be necessary, because we have to run the script somehow with root anyway)
 if [ "$UID" -ne "$ROOT_UID" ]
@@ -71,10 +72,12 @@ else
   #    hdfs dfs -mkdir -p /data
   # else
     hdfs dfs -mkdir -p /data/gphdfs_examples
+    hdfs dfs -mkdir -p /data/gphdfs_examples/write
+    hdfs dfs -mkdir -p /data/gphdfs_examples/write2
     hdfs dfs -put /tmp/$OUTPUTFILE /data/gphdfs_examples/
     echo "## $OUTPUTFILE is created under this directory /data/gphdfs_examples/"
     hdfs dfs -ls /data/gphdfs_examples/
-  # 
+  #
   # fi
 
 
