@@ -8,7 +8,7 @@ This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstr
 
 # Table of Contents
 1. [Pre-requisites](#Pre-requisites)
-2. [Starting Docker-compose](#Starting-Docker-compose)
+2. [Start Docker-compose](#Start-Docker-compose)
 3. [Configure Greenplum with Hadoop](#Configure-Greenplum-with-Hadoop)
 4. [Configure Greenplum with sample database with data](#Configure-Greenplum-with-sample-database-with-data)
 4. [Configure Cloudera](#Configure-Cloudera)
@@ -62,20 +62,9 @@ $ docker exec -it quickstart.cloudera bin/bash
 ## Configure Greenplum with Hadoop
 Once you have access to Greenplum docker instance, you can create database, table with some sample data.
 
-1. Start GPDB instance:
-Use the command 'startGPDB.sh'
-```
-root@gpdbsne# startGPDB.sh
-SSHD isn't running
- * Starting OpenBSD Secure Shell server sshd                             [ OK ]
-SSHD is running...
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Starting gpstart with args: -a
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Gathering information and validating the environment...
-...
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[INFO]:-Have lock file /tmp/.s.PGSQL.5432 and a process running on port 5432
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[ERROR]:-gpstart error: Master instance process running
-```
-2. Download Hadoop distribution and [configure Greenplum to use Hadoop distribution](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-one-time-hdfs-protocol-installation.html).
+
+
+1. Download Hadoop distribution and [configure Greenplum to use Hadoop distribution](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-one-time-hdfs-protocol-installation.html).
 
 Or you can use these scripts to automate the setup process.
 #### Download Hadoop files
@@ -93,8 +82,11 @@ Saving to: './HADOOP/hadoop-2.7.6.tar.gz.2'
 17% [======>                                ] 38,927,384  9.53MB/s  eta 21s  
 ```
 #### Setup Hadoop files
-This script installs the hadoop files under `/usr/local/hadoop`.
+This script `/code/usecase1/gphdfs/setup/SetupHadoopTarGz.sh` installs the hadoop files under `/usr/local/hadoop`.
 ```
+[root@gpdbsne /]# su - gpadmin
+Last login: Tue Jun 12 22:10:20 UTC 2018 from gpdbsne on pts/3
+[gpadmin@gpdbsne gphdfs]$ cd /code/usecase1/gphdfs/setup
 [gpadmin@gpdbsne setup]$ ./SetupHadoopTarGz.sh
 Using ./HADOOP
 CreateHadoopDir:  ./HADOOP/hadoop-2.7.6.tar.gz
@@ -133,7 +125,9 @@ GRANT
 GRANT
 CREATE EXTERNAL TABLE
 ```
-4. Verify database and table is created.
+4. Verify database and table is created
+Use 'psql -U gpadmin -d gphdfs_db -c "\dE"'
+5. Verify database and table is created.
 Use the command `su - gpadmin`, followed by `psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"`.
 
 The result shows no records are yet created.
