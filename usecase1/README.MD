@@ -3,7 +3,7 @@
 Greenplum Database® is an advanced, fully featured, open source data platform.  It provides powerful and rapid analytics on petabyte scale data volumes.  Uniquely geared toward big data analytics, Greenplum Database is powered by the world’s most advanced cost-based query optimizer delivering high analytical query performance on large data volumes.
 <https://greenplum.org>
 
-# How to use Greenplum to read data from Hadoop
+# How to use Greenplum to read data from Hadoop (15 minutes)
 This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstrates how to use GPHDFS to read text data from hadoop.
 
 # Table of Contents
@@ -70,6 +70,9 @@ Or you can use these scripts to automate the setup process.
 #### Download Hadoop files
 This script downloads hadoop tar file and unzip the file on the local directory. You can manually select different hadoop distributions by editing VERSION.
 ```
+[root@gpdbsne /]# su - gpadmin
+Last login: Tue Jun 12 22:27:47 UTC 2018 from gpdbsne on pts/2
+[gpadmin@gpdbsne ~]$ cd  /code/usecase1/gphdfs/setup
 [gpadmin@gpdbsne setup]$ ./DownloadHadoopTarGz.sh
 Using ./HADOOP
 --2018-05-07 22:13:49--  http://apache.claz.org/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz
@@ -152,8 +155,7 @@ $ docker exec -it quickstart.cloudera bin/bash
 ```
 2. This script `setupHdfsTextSimpleExample.sh` creates sample text file.
 ```
-[root@quickstart cloudera]# cd /code/usecase1/cloudera
-[root@quickstart cloudera]#[root@quickstart cloudera]# ./setupHdfsTextSimpleExample.sh
+[root@quickstart cloudera]#/code/usecase1/cloudera/setupHdfsTextSimpleExample.sh
 Using root to run this script.
 Found hadoop /data directory
 Recursively delete files under /data
@@ -169,7 +171,7 @@ Make sure you are accessing GPDB docker instance.
 
 1. Use psql on GPDB docker instance
 ````
-$ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_hdfs_textsimple;"
+$ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_readtextsimple;"
 location   | month | num_orders | total_sales
 -------------+-------+------------+-------------
 Prague      | Jan   |        101 |     4875.33
@@ -178,10 +180,9 @@ Prague      | Jan   |        101 |     4875.33
  Beijing   | Jul   |        411 |    11600.67
 (4 rows)
 ```
-2. Verify the number of records in this table "gphdfs_hdfs_textsimple".
-
+2. Verify the number of records in this table "gphdfs_readtextsimple".
 ```
-$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
+$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_readtextsimple;"
 count
 -------
     4
