@@ -5,7 +5,7 @@ This repository provides examples on how to use Greenplum with GPHDFS to access 
 
 # Use Case
 1. How to read simple text file on HDFS (Cloudera distribution)
-2. How to read parquet file on HDFS (Cloudera distribution)
+2. How to read parquet file on HDFS (Cloudera distribution) - TBD
 
 
 # Reference:
