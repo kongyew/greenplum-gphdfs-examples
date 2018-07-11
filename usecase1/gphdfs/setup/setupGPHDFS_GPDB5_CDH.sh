@@ -43,58 +43,12 @@ function isInstalled() {
     fi
 }
 ################################################################################
-function SetupMapR()
-{
-  echo "Setup MapR Client"
-
-  echo "Query rpm for MapR "
-  # https://maprdocs.mapr.com/home/AdvancedInstallation/AddingMapRreposonRHorCOS.html
-  isInstalled mapr-client
-  if [ $? == 0 ]; then
-
-    echo "Copying maprtech.repo to /etc/yum.repos.d/"
-    sudo cp ${DIR}/maprtech/maprtech5.2.2.repo /etc/yum.repos.d/
-    echo "rpm --import http://package.mapr.com/releases/pub/maprgpg.key"
-    sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
-
-    echo "yum install mapr-client.x86_64"
-    sudo  yum install -y mapr-client.x86_64
-  fi
-
-  gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'
-  gpstop -u
-
-  # gpconfig -s gp_hadoop_target_version
-  sudo /opt/mapr/server/configure.sh -N mapr-cluster -c -C mapr-control:7222 -HS mapr-clusterd1
-
-  # container_name: mapr-control
-  # environment:
-  #   - CLUSTERNAME=mapr-cluster
-  #   - MEMTOTAL=1024
-  #   - DISKLIST=/dev/sda
-
-  # Reference: https://gpdb.docs.pivotal.io/530/admin_guide/external/g-one-time-hdfs-protocol-installation.html
-  # gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'hdb2'"
-  # http://doc.mapr.com/display/MapR/Setting+Up+the+Client
-
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'"
-}
-################################################################################
 function SetupGPDB5_CDH5()
 {
   gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'cdh'"
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -s gp_hadoop_target_version "
 }
 ################################################################################
-function SetupGPDB5_HDP2()
-{
-  echo "Setup Hortonworks"
-
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'hdp'"
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_home -v '/usr/lib/hadoop'"
-  # gpmr-1.2
-
-  #cdh5
-}
 function usage(){
   me=$(basename "$0")
     echo "Usage: $me "

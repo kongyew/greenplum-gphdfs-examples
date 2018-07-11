@@ -33,8 +33,14 @@ function CreateHadoopDir()
     else
         sudo mkdir -p /usr/local/hadoop
     fi
-    sudo mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
-    echo "ls -al /usr/local/hadoop"
+
+    if [ -d "/usr/local/hadoop/hadoop-${VERSION}" ]; then
+        echo "Found /usr/local/hadoop/hadoop-${VERSION}"
+    else
+        sudo mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
+    fi
+
+
 
   elif [ "$(whoami)" == "root" ]; then
     if [ -d "/usr/local/hadoop" ]; then
@@ -42,8 +48,20 @@ function CreateHadoopDir()
     else
         mkdir -p /usr/local/hadoop
     fi
-    mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
-    echo "ls -al /usr/local/hadoop"
+
+    if [ -d "/usr/local/hadoop" ]; then
+        echo "Found /usr/local/hadoop"
+    else
+        mkdir -p /usr/local/hadoop
+    fi
+
+    if [ -d "/usr/local/hadoop/hadoop-${VERSION}" ]; then
+        echo "Found /usr/local/hadoop/hadoop-${VERSION}"
+    else
+        mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
+    fi
+
+
   else
     echo "Cannot run as this user: $(whoami)"
     exit -1
@@ -65,7 +83,7 @@ function AddHadoopHome()
   if [ -d ${HADOOP_HOME} ]; then
     if [ -e "/home/gpadmin/.bash_profile" ]
     then
-    echo  "export HADOOP_HOME=${HADOOP_HOME}" >> /home/gpadmin/.bash_profile
+    echo  "export HADOOP_HOME=${HADOOP_HOME}" >> /home/gpadmin/.bashrc
     else
       echo "${HADOOP_HOME} is not found."
     fi
@@ -85,14 +103,16 @@ function ConfigureGPHDFS()
   if [ "$(whoami)" == "gpadmin" ]; then
     gpconfig -c gp_hadoop_target_version -v  ${HADOOP_TARGET_VERSION}
     gpconfig -c gp_hadoop_home -v ${HADOOP_HOME}
-    gpstop -u
+    gpstop -r -a
     gpconfig -s gp_hadoop_target_version
+    gpconfig -s gp_hadoop_home
 
   elif [ "$(whoami)" == "root" ]; then
     runuser -l gpadmin -c "gpconfig -c gp_hadoop_target_version -v  ${HADOOP_TARGET_VERSION}"
     runuser -l gpadmin -c "gpconfig -c gp_hadoop_home -v ${HADOOP_HOME}"
-    runuser -l gpadmin -c "gpstop -u"
+    runuser -l gpadmin -c "gpstop -r -a"
     runuser -l gpadmin -c "gpconfig -s gp_hadoop_target_version "
+    runuser -l gpadmin -c "gpconfig -s gp_hadoop_home "
   else
     echo "Cannot run as this user: $(whoami)"
     exit -1
@@ -109,9 +129,9 @@ if [ "$VERSION" == "" ]; then
   exit 1
 else
   HADOOP_FILE=${DOWNLOAD_DIR}/hadoop-${VERSION}.tar.gz
-  CreateHadoopDir ${HADOOP_FILE}
+  #CreateHadoopDir ${HADOOP_FILE}
   AddHadoopHome "/usr/local/hadoop/hadoop-${VERSION}"
-  ConfigureGPHDFS "hdp" "/usr/local/hadoop/hadoop-${VERSION}"
+  ConfigureGPHDFS "cdh" "/usr/local/hadoop/hadoop-${VERSION}"
 
 
 fi
