@@ -1,10 +1,10 @@
 # Readme
-This repository provides examples on how to use Greenplum with GPHDFS to access external data such as HDFS on Cloudera
+This repository provides examples on how to use Greenplum with GPHDFS to access external data such as HDFS on Cloudera or any Hadoop distributions
 
 [![Build Status](https://travis-ci.org/kongyew/greenplum-gphdfs-examples.svg?branch=master)](https://travis-ci.org/kongyew/greenplum-gphdfs-examples)
 
 # Use Case
-1. [How to read simple text file on HDFS](#usecase1/README.MD) (Cloudera distribution)
+1. [How to read simple text file and write text file on HDFS](#usecase1/README.MD) (Cloudera distribution)
 2. How to read parquet file on HDFS (Cloudera distribution) - TBD
 
 

@@ -6,7 +6,6 @@ set -e
 # Including configurations
 . config.sh
 
-
 function RunUseCase4()
 {
   #echo "[RunUseCase4] Command:  $1"

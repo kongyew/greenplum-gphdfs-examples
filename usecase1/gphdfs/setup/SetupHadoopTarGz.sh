@@ -34,11 +34,11 @@ function CreateHadoopDir()
         sudo mkdir -p /usr/local/hadoop
     fi
 
-    if [ -d "/usr/local/hadoop/hadoop-${VERSION}" ]; then
-        echo "Found /usr/local/hadoop/hadoop-${VERSION}"
-    else
+    # if [ -d "/usr/local/hadoop/hadoop-${VERSION}" ]; then
+    #     echo "Found /usr/local/hadoop/hadoop-${VERSION}"
+    # else
         sudo mv ${DOWNLOAD_DIR}/hadoop-${VERSION} /usr/local/hadoop
-    fi
+    # fi
 
 
 
@@ -129,7 +129,7 @@ if [ "$VERSION" == "" ]; then
   exit 1
 else
   HADOOP_FILE=${DOWNLOAD_DIR}/hadoop-${VERSION}.tar.gz
-  #CreateHadoopDir ${HADOOP_FILE}
+  CreateHadoopDir ${HADOOP_FILE}
   AddHadoopHome "/usr/local/hadoop/hadoop-${VERSION}"
   ConfigureGPHDFS "cdh" "/usr/local/hadoop/hadoop-${VERSION}"
 

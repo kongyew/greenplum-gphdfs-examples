@@ -308,7 +308,6 @@ Type "help" for help.
 gphdfs_db=#
 ```
 
-
 ### Reference: Use psql on GPDB docker instance
 ````
 $ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_readtextsimple;"
