@@ -5,7 +5,7 @@ services:
     hostname: "sandbox-hdp.hortonworks.com"
     container_name: sandbox-hdp
     command: >
-            bash -c "/etc/init.d/startup_script start 
+            bash -c "/etc/init.d/startup_script start
             && bin/bash"
     environment:
       - COMPOSE_HTTP_TIMEOUT=120 # default is 60
@@ -83,7 +83,7 @@ services:
         #build:
         #  context: .
         #  dockerfile: ./gpdb/Dockerfile
-        image: "kochanpivotal/gpdb5-pxf"
+        image: "kochanpivotal/gpdb5oss"
         command: bin/bash
         hostname: "gpdbsne"
         container_name: gpdbsne
