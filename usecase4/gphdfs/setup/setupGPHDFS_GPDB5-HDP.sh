@@ -30,7 +30,7 @@ function InstallJDK()
   echo "JRE_HOME : ${JRE_HOME}"
   echo "Add Java home to gpadmin bashrc"
   gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "echo 'export JAVA_HOME=/usr/lib/jvm/jre-openjdk/' >> /home/gpadmin/.bash_profile"
-
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "echo 'export JAVA_HOME=/usr/lib/jvm/jre-openjdk/' >> /home/gpadmin/.bashrc"
 }
 ###############################################################################
 function isInstalled() {
@@ -42,31 +42,36 @@ function isInstalled() {
         return 0;
     fi
 }
-function AddHadoopHome()
-{
-  echo "Hadoop HOME:  $1"
-  HADOOP_HOME="${1}"
 
-  if [ -d ${HADOOP_HOME} ]; then
-    if [ -e "/home/gpadmin/.bash_profile" ]
-    then
-    echo  "export HADOOP_HOME=${HADOOP_HOME}" >> /home/gpadmin/.bashrc
-    else
-      echo "${HADOOP_HOME} is not found."
-    fi
+################################################################################
+function SetupHDP()
+{
+  echo "Setup Hortonworks"
+  sudo yum -y  remove hadoop* 
+  sudo wget -nv http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.3.0/hdp.repo -O /etc/yum.repos.d/hdp.repo
+  sudo yum -y --skip-broken install hadoop* openssl
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'hdp'"
+
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "echo 'export HADOOP_HOME=/usr/hdp/current/hadoop-client' >> /home/gpadmin/.bashrc"
+
+  if [ "$(whoami)" == "gpadmin" ]; then
+    gpconfig -c gp_hadoop_target_version -v  'hdp'
+    gpconfig -c gp_hadoop_home -v /usr/hdp/current/hadoop-client/
+    gpstop -r -a
+    gpconfig -s gp_hadoop_target_version
+    gpconfig -s gp_hadoop_home
+  elif [ "$(whoami)" == "root" ]; then
+    runuser -l gpadmin -c "gpconfig -c gp_hadoop_target_version -v  'hdp'"
+    runuser -l gpadmin -c "gpconfig -c gp_hadoop_home -v /usr/hdp/current/hadoop-client/"
+    runuser -l gpadmin -c "gpstop -r -a"
+    runuser -l gpadmin -c "gpconfig -s gp_hadoop_target_version "
+    runuser -l gpadmin -c "gpconfig -s gp_hadoop_home "
   else
-    echo "Error: Please specify the variable $HADOOP_HOME"
-    exit 1
+    echo "Cannot run as this user: $(whoami)"
+    exit -1
   fi
 
 }
-################################################################################
-function SetupGPDB5_CDH5()
-{
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'cdh'"
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -s gp_hadoop_target_version "
-}
-################################################################################
 function usage(){
   me=$(basename "$0")
     echo "Usage: $me "
@@ -83,7 +88,7 @@ function usage(){
 ################################################################################
 export WHOAMI=`whoami`
 
-if [ [ "${WHOAMI}" -ne "gpadmin"] && ["${WHOAMI}" -ne "root"] ]
+if [ ["${WHOAMI}" -ne "gpadmin"] && ["${WHOAMI}" -ne "root"] ]
 then
     echo "Please run the script as gpadmin or root" >&2
     exit 1
@@ -138,31 +143,7 @@ fi
 
 ####
 InstallJDK
-#
-# if [ -z "$HADOOP_DISTRIBUTION" ]
-# then
-#     usage
-#     exit 1
-# else
-#     if [ -n "$HADOOP_DISTRIBUTION" ]
-#     then
-#       if [ "$HADOOP_DISTRIBUTION" == "mapr" ]
-#       then
-#           echo "Variable $HADOOP_DISTRIBUTION exists!"
-#           SetupMapR
-#       elif [ "$HADOOP_DISTRIBUTION" == "cdh" ]
-#       then
-#             echo "Variable $HADOOP_DISTRIBUTION exists!"
-#             SetupCDH5
-#       elif [ "$HADOOP_DISTRIBUTION" == "hdp2" ]
-#       then
-#             echo "Variable $HADOOP_DISTRIBUTION exists!"
-#             SetupHDP2
-#       else # default option
-#             echo "Variable $HADOOP_DISTRIBUTION exists!"
-#       fi
-#
-#     else
-#       echo 'Variable "${HADOOP_DISTRIBUTION}" does not exist!'
-#     fi
-# fi
+SetupHDP
+
+exit 0;
+

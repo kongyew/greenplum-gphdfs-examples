@@ -8,7 +8,6 @@ export DOCKER_OSS_TAG="kochanpivotal/gpdb5oss"
 export DOCKER_LATEST_OSS_TAG="kochanpivotal/gpdb5oss:latest"
 
 # Use Cases specific
-
 export DC_USE_CASE1_SCRIPT="docker-compose -f ./usecase1/docker-compose.yml"
 export DC_USE_CASE2_SCRIPT="docker-compose -f ./usecase2/docker-compose.yml"
 

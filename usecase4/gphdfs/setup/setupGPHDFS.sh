@@ -42,31 +42,59 @@ function isInstalled() {
         return 0;
     fi
 }
-function AddHadoopHome()
+################################################################################
+function SetupMapR()
 {
-  echo "Hadoop HOME:  $1"
-  HADOOP_HOME="${1}"
+  echo "Setup MapR Client"
 
-  if [ -d ${HADOOP_HOME} ]; then
-    if [ -e "/home/gpadmin/.bash_profile" ]
-    then
-    echo  "export HADOOP_HOME=${HADOOP_HOME}" >> /home/gpadmin/.bashrc
-    else
-      echo "${HADOOP_HOME} is not found."
-    fi
-  else
-    echo "Error: Please specify the variable $HADOOP_HOME"
-    exit 1
+  echo "Query rpm for MapR "
+  # https://maprdocs.mapr.com/home/AdvancedInstallation/AddingMapRreposonRHorCOS.html
+  isInstalled mapr-client
+  if [ $? == 0 ]; then
+
+    echo "Copying maprtech.repo to /etc/yum.repos.d/"
+    sudo cp ${DIR}/maprtech/maprtech5.2.2.repo /etc/yum.repos.d/
+    echo "rpm --import http://package.mapr.com/releases/pub/maprgpg.key"
+    sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
+
+    echo "yum install mapr-client.x86_64"
+    sudo  yum install -y mapr-client.x86_64
   fi
 
+  gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'
+  gpstop -u
+
+  # gpconfig -s gp_hadoop_target_version
+  sudo /opt/mapr/server/configure.sh -N mapr-cluster -c -C mapr-control:7222 -HS mapr-clusterd1
+
+  # container_name: mapr-control
+  # environment:
+  #   - CLUSTERNAME=mapr-cluster
+  #   - MEMTOTAL=1024
+  #   - DISKLIST=/dev/sda
+
+  # Reference: https://gpdb.docs.pivotal.io/530/admin_guide/external/g-one-time-hdfs-protocol-installation.html
+  # gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'hdb2'"
+  # http://doc.mapr.com/display/MapR/Setting+Up+the+Client
+
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'"
 }
 ################################################################################
-function SetupGPDB5_CDH5()
+function SetupCDH5()
 {
   gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'cdh'"
-  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -s gp_hadoop_target_version "
 }
 ################################################################################
+function SetupHDP2()
+{
+  echo "Setup Hortonworks"
+
+  gpssh -e -v -f ${GPDB_HOSTS} -u gpadmin "gpconfig -c gp_hadoop_target_version -v 'gpmr-1.2'"
+
+  # gpmr-1.2
+
+  #cdh5
+}
 function usage(){
   me=$(basename "$0")
     echo "Usage: $me "
@@ -83,7 +111,7 @@ function usage(){
 ################################################################################
 export WHOAMI=`whoami`
 
-if [ [ "${WHOAMI}" -ne "gpadmin"] && ["${WHOAMI}" -ne "root"] ]
+if [ [ "${WHOAMI}" -ne "gpadmin"] && ["${WHOAMI}" -ne "root"]]
 then
     echo "Please run the script as gpadmin or root" >&2
     exit 1
